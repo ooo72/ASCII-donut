@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASCII Donut</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+      font-family: monospace;
+    }
+
+    h1 {
+      font-size: 3rem;
+      animation: moveUp 2s forwards;
+      position: absolute;
+    }
+
+    @keyframes moveUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-50%);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-150%);
+        opacity: 0;
+      }
+    }
+
+    #canvas {
+      white-space: pre;
+      line-height: 1;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Donut 🍩</h1>
+  <pre id="canvas"></pre>
+  <script>
+    // ASCII donut script
+    (function () {
+      let A = 0, B = 0;
+      const canvasWidth = 80; 
+      const canvasHeight = 22; 
+      const zBuffer = [];
+      const output = [];
+      const chars = ".,-~:;=!*#$@";
+      const canvas = document.getElementById("canvas");
+
+      function renderFrame() {
+        for (let i = 0; i < canvasWidth * canvasHeight; i++) {
+          zBuffer[i] = 0;
+          output[i] = ' ';
+        }
+
+        for (let j = 0; j < 6.28; j += 0.07) {
+          for (let i = 0; i < 6.28; i += 0.02) {
+            const c = Math.sin(i);
+            const d = Math.cos(j);
+            const e = Math.sin(A);
+            const f = Math.sin(j);
+            const g = Math.cos(A);
+            const h = d + 2;
+            const D = 1 / (c * h * e + f * g + 5);
+            const l = Math.cos(i);
+            const m = Math.cos(B);
+            const n = Math.sin(B);
+            const t = c * h * g - f * e;
+
+            const x = Math.floor(canvasWidth / 2 + canvasWidth / 4 * D * (l * h * m - t * n));
+            const y = Math.floor(canvasHeight / 2 + canvasHeight / 4 * D * (l * h * n + t * m));
+            const o = x + canvasWidth * y;
+            const N = Math.floor(8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n));
+
+            if (canvasHeight > y && y > 0 && x > 0 && canvasWidth > x && D > zBuffer[o]) {
+              zBuffer[o] = D;
+              output[o] = chars[N > 0 ? N : 0];
+            }
+          }
+        }
+
+        let frame = '';
+        for (let k = 0; k < output.length; k++) {
+          frame += k % canvasWidth === 0 ? '\n' : '';
+          frame += output[k];
+        }
+        canvas.textContent = frame;
+
+        A += 0.04;
+        B += 0.02;
+
+        requestAnimationFrame(renderFrame);
+      }
+
+      
+      renderFrame();
+    })();
+  </script>
+</body>
+</html>
