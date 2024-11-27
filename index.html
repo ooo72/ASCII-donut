@@ -49,64 +49,48 @@
   <h1>Donut 🍩</h1>
   <pre id="canvas"></pre>
   <script>
-    // ASCII donut script
-    (function () {
-      let A = 0, B = 0;
-      const canvasWidth = 80; 
-      const canvasHeight = 22; 
-      const zBuffer = [];
-      const output = [];
-      const chars = ".,-~:;=!*#$@";
-      const canvas = document.getElementById("canvas");
+  const readline = require('readline');
 
-      function renderFrame() {
-        for (let i = 0; i < canvasWidth * canvasHeight; i++) {
-          zBuffer[i] = 0;
-          output[i] = ' ';
-        }
+let A = 0, B = 0;
+const z = new Array(1760).fill(0);
+const b = new Array(1760).fill(' ');
 
-        for (let j = 0; j < 6.28; j += 0.07) {
-          for (let i = 0; i < 6.28; i += 0.02) {
-            const c = Math.sin(i);
-            const d = Math.cos(j);
-            const e = Math.sin(A);
-            const f = Math.sin(j);
-            const g = Math.cos(A);
-            const h = d + 2;
-            const D = 1 / (c * h * e + f * g + 5);
-            const l = Math.cos(i);
-            const m = Math.cos(B);
-            const n = Math.sin(B);
-            const t = c * h * g - f * e;
+const clearScreen = () => {
+    console.clear();
+};
 
-            const x = Math.floor(canvasWidth / 2 + canvasWidth / 4 * D * (l * h * m - t * n));
-            const y = Math.floor(canvasHeight / 2 + canvasHeight / 4 * D * (l * h * n + t * m));
-            const o = x + canvasWidth * y;
-            const N = Math.floor(8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n));
+const drawFrame = () => {
+    clearScreen();
+    for (let j = 0; j < 6.28; j += 0.07) {
+        for (let i = 0; i < 6.28; i += 0.02) {
+            const c = Math.sin(i), d = Math.cos(j), e = Math.sin(A), f = Math.sin(j),
+                  g = Math.cos(A), h = d + 2, D = 1 / (c * h * e + f * g + 5),
+                  l = Math.cos(i), m = Math.cos(B), n = Math.sin(B), t = c * h * g - f * e;
+            const x = Math.floor(40 + 30 * D * (l * h * m - t * n)),
+                  y = Math.floor(12 + 15 * D * (l * h * n + t * m)),
+                  o = x + 80 * y,
+                  N = Math.floor(8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n));
 
-            if (canvasHeight > y && y > 0 && x > 0 && canvasWidth > x && D > zBuffer[o]) {
-              zBuffer[o] = D;
-              output[o] = chars[N > 0 ? N : 0];
+            if (y < 22 && y > 0 && x > 0 && x < 80 && D > z[o]) {
+                z[o] = D;
+                b[o] = ".,-~:;=!*#$@"[N > 0 ? N : 0];
             }
-          }
         }
+    }
 
-        let frame = '';
-        for (let k = 0; k < output.length; k++) {
-          frame += k % canvasWidth === 0 ? '\n' : '';
-          frame += output[k];
-        }
-        canvas.textContent = frame;
+    for (let k = 0; k < 1761; k++) {
+        process.stdout.write(k % 80 ? b[k] : '\n');
+    }
 
-        A += 0.04;
-        B += 0.02;
+    A += 0.04;  // Increment angle A
+    B += 0.02;  // Increment angle B
+};
 
-        requestAnimationFrame(renderFrame);
-      }
+const main = () => {
+    setInterval(drawFrame, 100); 
+};
 
-      
-      renderFrame();
-    })();
+main();
   </script>
 </body>
 </html>
